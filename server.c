@@ -11,7 +11,7 @@
 
 #define PORT "9034"   // port we're listening on
 
-// get sockaddr, IPv4 or IPv6:
+// gt sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
 {
 	if (sa->sa_family == AF_INET) {

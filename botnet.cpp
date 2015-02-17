@@ -13,7 +13,7 @@ string globalSeed = "1234";
 
 int randomFunctionGenerator(int currentTimeInMinutes, string seed) {
     srand(stoi(seed));
-    int hash = currentTimeInMinutes + rand()%100; // current time in minutes + random offset based on seed
+    int hash = currentTimeInMinutes + rand()%100; //s current time in minutes + random offset based on seed
 
     int offset = 'a' - 1;
     for(string::const_iterator it=seed.begin(); it!=seed.end(); ++it) {
