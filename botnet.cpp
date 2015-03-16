@@ -38,6 +38,7 @@ struct randomTuple
 {
     int one;
     int two;
+    char id[3];
 };
 
 randomTuple *fun;
@@ -96,9 +97,10 @@ void syncthread()
                // minutes = currentTimeInMinutes;
                 seconds = currentTimeInSeconds;
 		        funmux.lock();
-                (*fun).one = randomFunctionGenerator(currentTimeInSeconds, globalSeed, 12);
-                (*fun).two = randomFunctionGenerator(currentTimeInSeconds, globalSeed, 10);
-		        printf("Updating random numbers: %d %d \n", fun->one, fun->two);
+                fun->one = randomFunctionGenerator(currentTimeInSeconds, globalSeed, 12);
+                fun->two = randomFunctionGenerator(currentTimeInSeconds, globalSeed, 10);
+		        randomString(fun->id, 3);
+                printf("Updating random numbers: %d %d. Identifier string: %s \n", fun->one, fun->two, fun->id);
                 funmux.unlock();
             
             }    
@@ -169,10 +171,12 @@ void listenthread()
 
 void serverthread()
 {
+    int count = 0;
  for(;;) 
     {
-        // shared memory stuff
+       
         sleep(sendFreq);
+       
         //this code is for writing data
 
         randomTuple locfun;
@@ -181,14 +185,27 @@ void serverthread()
         funmux.unlock();
 
         char msg[LEN];
-      //  int n = rand()%10 + 1;
-        randomString(msg, 3);
-        Encode e(msg, 2, 2);
-        int result[3] = {0,0,0};
-        e.encoding(result);
-        string toSend = to_string(result[0]) + ";" + to_string(result[1]) + ";" + to_string(result[2]) + ";";
-        send(sockfd, toSend.c_str(), toSend.length(), 0);
-        printf("Sending Message %s encoded to => %s using encoding scheme: %d %d \n", msg, toSend.c_str(), locfun.one, locfun.two );
+     
+        if (count == 4)
+        {
+            // send encoded id
+            Encode e(locfun.id, 2, 2);
+            int result[3] = {0,0,0};
+            e.encoding(result);
+            string toSend = to_string(result[0]) + ";" + to_string(result[1]) + ";" + to_string(result[2]) + ";";
+            send(sockfd, toSend.c_str(), toSend.length(), 0);
+            printf("BOTNET: Sending Message %s encoded to => %s using encoding scheme: %d %d \n", msg, toSend.c_str(), locfun.one, locfun.two );
+        }
+        else
+        {
+            // send normal message
+            printf("NORMAL: Sending message hii \n");
+            char *m = "hii";
+            strcpy(msg, m);
+            send(sockfd, msg, strlen(msg), 0);
+        }
+      
+        count = (count + 1) % 5;
     }
 }
 
