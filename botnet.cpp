@@ -156,7 +156,7 @@ void listenthread()
 
 
 
-        Decode d(message, 2, 2);
+        Decode d(message, locfun.one, locfun.two);
         
         char result[3] = {' ',' ',' '};
         d.decoding(result); 
@@ -197,12 +197,12 @@ void serverthread()
         if (count == 4)
         {
             // send encoded id
-            Encode e(locfun.id, 2, 2);
+            Encode e(locfun.id, locfun.one, locfun.two);
             int result[3] = {0,0,0};
             e.encoding(result);
             string toSend = to_string(result[0]) + ";" + to_string(result[1]) + ";" + to_string(result[2]) + ";";
             send(sockfd, toSend.c_str(), toSend.length(), 0);
-            printf("BOTNET: Sending Message %s encoded to => %s using encoding scheme: %d %d \n", msg, toSend.c_str(), locfun.one, locfun.two );
+            printf("BOTNET: Sending Message %s encoded to => %s using encoding scheme: %d %d \n", locfun.id, toSend.c_str(), locfun.one, locfun.two );
         }
         else
         {
