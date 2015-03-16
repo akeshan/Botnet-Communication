@@ -21,7 +21,7 @@
 #include <unistd.h>
 #include <string>
 #define LEN 1024
-#define RUNEVERY 30
+#define RUNEVERY 10
 using namespace std;
 
 string globalSeed = "1234";
@@ -165,8 +165,16 @@ void listenthread()
    //     cout << "length: " << res.length() << endl;
         res.substr(0, 3);
 
-        printf("Recieved Message: %s decoded to => %s using encoding scheme: %d %d\n ", buff, res.c_str(), locfun.one, locfun.two);     
+        string id = locfun.id;
+        if (res == id)
+        {
+            printf("Recieved Message: %s decoded to => %s using encoding scheme: %d %d Botnet detected!\n ", buff, res.c_str(), locfun.one, locfun.two);
         }
+        else
+        {
+            printf("Recieved Message: %s decoded to => %s using encoding scheme: %d %d\n ", buff, res.c_str(), locfun.one, locfun.two);     
+        }
+    }
 } 
 
 void serverthread()
@@ -200,7 +208,7 @@ void serverthread()
         {
             // send normal message
             printf("NORMAL: Sending message hii \n");
-            char *m = "hii";
+            const char *m = "hii";
             strcpy(msg, m);
             send(sockfd, msg, strlen(msg), 0);
         }
